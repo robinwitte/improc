@@ -11,7 +11,7 @@ def load(path, lazy_init = False):
     -------
     image object
     """
-
+    
     # TODO:
     #       - detemine if its a hdf5 file or a json file
     #       - create image object and store data (image = Image(path, lazy_init, True/False))
