@@ -1,3 +1,6 @@
+from improc.Mask import Mask
+from improc.Polygons import Polygons
+
 class Image():
     """ A datastructure to store the image information
 
@@ -19,8 +22,9 @@ class Image():
 
         if hdf5:
             self.mask.create_data_from_path(path)
+            if not lazy_init:
+                self.polygons.create_data_from_mask(self.mask)
         else:
-            self.polygons.
-        self.polygons= []
-
-        # TODO: should we let the data in a dictionary structure?
+            self.polygons.create_data_from_path(path)
+            if not lazy_init:
+                self.mask.create_data_from_polygons(self.polygons)

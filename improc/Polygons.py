@@ -1,18 +1,23 @@
+import json
+
 class Polygons():
     """ A datastructure to store the polygon information from the json file"""
 
-    def __init__(self, path):
+    def __init__(self):
         self.names = []
         self.polygons= []
+        self.data=[]
 
-        # TODO: should we let the data in a dictionary structure?
 
     def create_data_from_path(self, path):
         """ Function to read JSON file  """
 
-        # TODO: read in data and store it in self.names and
+        with open(path) as json_file:
+            self.data = json.load(json_file)
+        self.names, self.polygons, _ = [[d[k] for d in self.data] for k in sorted(self.data[0].keys())]
 
-    def create_data_from_mask(self, polygons):
+
+    def create_data_from_mask(self, mask):
         """ Function to create the polygons from the mask """
 
         # TODO: create the quadtree and store it in self.data (I don't think we will get this task done)
