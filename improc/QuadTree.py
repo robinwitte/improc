@@ -16,10 +16,7 @@ class QuadTree():
     self.SW : QuadTree Object containing information about lower-left child
     self.SE : QuadTree Object containing information about lower-right child
 
-    value_NW : If there is no NW-child and the upper-left area contains only one pixel-value, this is the value
-    value_NE : If there is no NE-child and the upper-right area contains only one pixel-value, this is the value
-    value_SW : If there is no SW-child and the lower-left area contains only one pixel-value, this is the value
-    value_SE : If there is no SE-child and the lower-right area contains only one pixel-value, this is the value
+    self.value : If this represents homogeneous field, contains value
 
     Parameters
     ----------
@@ -30,16 +27,12 @@ class QuadTree():
     width = 0
     height = 0
     data = None
+    value = None
 
     NW = None
     NE = None
     SW = None
     SE = None
-
-    value_NW = None
-    value_NE = None
-    value_SW = None
-    value_SE = None
 
 
     def __init__(self, data, max_depth):
@@ -79,37 +72,56 @@ class QuadTree():
 
     def bottom_up(self, data):
         """
-        TODO : go to the leaves of the tree
         :param data:
         :param max_depth:
         :return:
         """
-        if self.NW.NW == None:
-            self.value_NW = self.NW.bottom_up(self.NW.data)
-            self.value_NE = self.NE.bottom_up(self.NE.data)
-            self.value_SW = self.SW.bottom_up(self.SW.data)
-            self.value_SE = self.SE.bottom_up(self.SE.data)
-
-            if self.value_NW != None:
-
-        else:
+        if self.NW == None:
+            #now, we are at one of the leaves
             mean = np.mean(data)
-            if mean == 0:
-                return 0
-            elif mean == 1:
-                return 1
+            #mean == 0 => all values are 0
+            #mean == 1 => all values are equal to 1. More Polygons: mean 2, 3, 4, ...
+            if mean.is_integer():
+                self.value = mean
+                return mean
             else:
                 return None
 
-        pass
+        else:
+            NW_val = self.NW.bottom_up(self.NW.data)
+            NE_val = self.NE.bottom_up(self.NE.data)
+            SW_val = self.SW.bottom_up(self.SW.data)
+            SE_val = self.SE.bottom_up(self.SE.data)
 
-    def check(self, name, points):
+            #then, we can merge
+            if len({NW_val, NE_val, SW_val, SE_val}) == 1 and NW_val is not None:
+                self.value = NW_val
+                #maybe set children to None?
+
+
+    def check(self, points):
 
         #TODO :
         #   This method should check whether a set of points is contained in a certain polygon named name.
         #   Maybe we only need the pixel-value corresponding to the polygon. Then, we do this recursively, and always pass
         #   the set of points corresponding to one of the quadrants (e.g. half the points have coordinates in upper-left,
         #   then pass the set containing these points to check method of upper-left tree, not individually).
+        val = self.value
+        if val is not None:
+            #TODO : maybe we only have to return one value (val == 1) for all points then
+            return [val == 1 for i in range(len(points))]
+        else:
+            #TODO : implement coordinates, maybe create Point class
+            if self.NW is not None:
+                return self.NW.check(points[])
+            elif self.NE is not None:
+                return self.NE.check(points[])
+            elif self.SW is not None:
+                return self.SW.check(points[])
+            elif self.SE is not None:
+                return self.SE.check(points[])
+            else:
+                #TODO : here we have to check each Point individually
 
 
         pass
