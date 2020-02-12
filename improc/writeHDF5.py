@@ -3,7 +3,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
-def writeHDF5(path:str, image):
+""" creates a hdf5 file and writes the mask data
+
+Parameters
+----------
+path : A string that is the path to the hdf5 file that will be written
+image : An image object, from which the data will be stored
+
+Returns
+-------
+
+"""
+
+
+# TODO:
+#       - check if path is a correct path
+#       - create file
+#       - write data from the quadtree in image.mask in chunks to the file
+#       - maybe implement Error Messages
+
+#def writeHDF5(path:str, image):
+
+
+def writeHDF5(path: str, save_files=True):
 
     f = h5py.File(path, 'r')
 
@@ -25,24 +47,13 @@ def writeHDF5(path:str, image):
     chunk9 = dset[(8 * x) + 1:(9 * x), (8 * y) + 1:(9 * y)]
     chunk10 = dset[(9 * x) + 1:, (9 * y) + 1:]
 
+    chunks = [chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8, chunk9, chunk10]
 
+    plt.savefig("try.png")
 
-    """ creates a hdf5 file and writes the mask data
+    if save_files == True:
+        for index,chunk in chunks:
+            imgplot = plt.imshow(chunk)
+            plt.savefig(f"image{index}.png")
 
-    Parameters
-    ----------
-    path : A string that is the path to the hdf5 file that will be written
-    image : An image object, from which the data will be stored
-
-    Returns
-    -------
-
-    """
-
-    # TODO:
-    #       - check if path is a correct path
-    #       - create file
-    #       - write data from the quadtree in image.mask in chunks to the file
-    #       - maybe implement Error Messages
-
-    return [chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8, chunk9, chunk10]
+    return chunks
