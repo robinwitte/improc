@@ -1,4 +1,7 @@
 
+import json
+import os
+
 def writeJSON(path, image):
     """ creates a json file and writes the polygon data
 
@@ -12,10 +15,11 @@ def writeJSON(path, image):
 
     """
 
+    print("not implemented jet")
+
+
     # TODO:
     #       - check if path is a correct path
     #       - create file
     #       - write data from the quadtree in image.polygons to the file
     #       - maybe implement Error Messages
-
-    

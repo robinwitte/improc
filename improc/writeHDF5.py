@@ -12,6 +12,8 @@ def writeHDF5(path, image):
 
     """
 
+    print("not implemented jet")
+
     # TODO:
     #       - check if path is a correct path
     #       - create file
