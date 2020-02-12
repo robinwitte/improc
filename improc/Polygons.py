@@ -1,4 +1,5 @@
 import json
+from shapely.geometry import Polygon
 
 class Polygons():
     """ A datastructure to store the polygon information from the json file"""
@@ -15,6 +16,7 @@ class Polygons():
         with open(path, 'r') as json_file:
             self.data = json.load(json_file)
         self.names, self.polygons, _ = [[d[k] for d in self.data] for k in sorted(self.data[0].keys())]
+        self.polygons = [Polygon(polygon) for polygon in self.polygons]
 
 
     def create_data_from_mask(self, mask):
