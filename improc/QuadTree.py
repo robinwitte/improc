@@ -85,7 +85,11 @@ class QuadTree():
         :return:
         """
         if self.NW != None:
-            if self.NW.bottom_up(self.NW.data)
+            self.value_NW = self.NW.bottom_up(self.NW.data)
+            self.value_NE = self.NE.bottom_up(self.NE.data)
+            self.value_SW = self.SW.bottom_up(self.SW.data)
+            self.value_SE = self.SE.bottom_up(self.SE.data)
+
         else:
             mean = np.mean(data)
             if mean == 0:
