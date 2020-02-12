@@ -6,9 +6,9 @@ class QuadTree():
 
     Attributes
     ----------
-    self.starting_pixel : Point-Object containing the coordinates of upper-left pixel that is in the area of this part
+    self.starting_pixel : Point-Object containing the coordinates of lower-left pixel that is in the area of this part
     self.width : (horizontal) width of the area spanned by this Quadtree
-    self.length : (vertical) length of the area spanned by this Quadtree
+    self.height : (vertical) height of the area spanned by this Quadtree
 
     self.NW : QuadTree Object containing information about upper-left child
     self.NE : QuadTree Object containing information about upper-right child
@@ -27,7 +27,7 @@ class QuadTree():
 
     starting_pixel = None
     width = 0
-    length = 0
+    height = 0
 
     NW = None
     NE = None
@@ -40,12 +40,14 @@ class QuadTree():
     value_SE = None
 
 
-    def __init__(self, data):
+    def __init__(self, data, max_depth):
         self.data = data    #maybe omit, if this copies all the data (too time-consuming)
-        self.width, self.length = data.shape    #assuming data has an attribute shape
-        self.split(data)
+        self.starting_pixel = data[0, 0]
+        self.width, self.height = data.shape    #assuming data has an attribute shape
+        self.split(data, max_depth)
 
-    def split(self, data):
+
+    def split(self, data, max_depth):
         #TODO :
         #   This method has to do the split of the data. Determine where to split each quadrants in order to get a
         #   good compression of the data, and then overwrite NW, NE, SW, SE. If one of those areas consists of only one
