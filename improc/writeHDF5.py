@@ -9,7 +9,7 @@ def writeHDF5(path:str, image):
 
     keys =list(f.keys())
 
-    dset = f['data']
+    dset = f[keys[0]]
 
     x = round(dset.shape[0] / 10)
     y = round(dset.shape[1] / 10)
