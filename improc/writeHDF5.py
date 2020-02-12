@@ -12,7 +12,7 @@ def writeHDF5(path, image):
 
     """
 
-    print("not implemented jet")
+    print("not implemented yet")
 
     # TODO:
     #       - check if path is a correct path

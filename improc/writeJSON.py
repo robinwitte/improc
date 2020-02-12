@@ -1,6 +1,5 @@
 
 import json
-import os
 
 def writeJSON(path, image):
     """ creates a json file and writes the polygon data
@@ -15,11 +14,13 @@ def writeJSON(path, image):
 
     """
 
-    print("not implemented jet")
+    # Check for correct path
+    if not isinstance(path, str) or not path.endswith('.json'):
+        raise TypeError("invalid path or file: {0!r}".format(path))
 
+    # Check if image object has polygon data
+    if not image.polygons.data:
+        image.polygons.create_data_from_mask(image.mask)
 
-    # TODO:
-    #       - check if path is a correct path
-    #       - create file
-    #       - write data from the quadtree in image.polygons to the file
-    #       - maybe implement Error Messages
+    # write data to file
+    image.polygons.write_data_to_file(path)
