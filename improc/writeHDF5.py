@@ -52,7 +52,7 @@ def writeHDF5(path: str, save_files=True):
     plt.savefig("try.png")
 
     if save_files == True:
-        for index,chunk in chunks:
+        for index,chunk in enumerate(chunks):
             imgplot = plt.imshow(chunk)
             plt.savefig(f"image{index}.png")
 
