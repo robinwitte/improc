@@ -1,3 +1,4 @@
+from improc.Image import Image
 
 def load(path, lazy_init = False):
     """
@@ -12,8 +13,12 @@ def load(path, lazy_init = False):
     image object
     """
 
-    print("not implemented jet")
+    # Check for correct path
+    if not isinstance(path, str) or (not path.endswith('.json') and not path.endswith('.hdf5')):
+        raise TypeError("invalid path or file: {0!r}".format(path))
 
-    # TODO:
-    #       - detemine if its a hdf5 file or a json file
-    #       - create image object and store data (image = Image(path, lazy_init, True/False))
+    hdf5 = False
+    if path.endswith('.hdf5'):
+        hdf5 = True
+
+    return Image(path, lazy_init, hdf5)
