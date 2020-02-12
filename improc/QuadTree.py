@@ -9,6 +9,7 @@ class QuadTree():
     self.starting_pixel : Point-Object containing the coordinates of lower-left pixel that is in the area of this part
     self.width : (horizontal) width of the area spanned by this Quadtree
     self.height : (vertical) height of the area spanned by this Quadtree
+    self.data : contains data as image if necessary (only at bottom level)
 
     self.NW : QuadTree Object containing information about upper-left child
     self.NE : QuadTree Object containing information about upper-right child
@@ -28,6 +29,7 @@ class QuadTree():
     starting_pixel = None
     width = 0
     height = 0
+    data = None
 
     NW = None
     NE = None
@@ -48,12 +50,50 @@ class QuadTree():
 
 
     def split(self, data, max_depth):
+        """
+
+        :param data: assume this is a numpy array
+        :param max_depth: if this is 0, don´t split further
+        :return: nothing, writes in attributes for children
+        """
+
         #TODO :
         #   This method has to do the split of the data. Determine where to split each quadrants in order to get a
         #   good compression of the data, and then overwrite NW, NE, SW, SE. If one of those areas consists of only one
         #   pixel value, set the corresponding value-attribute to this value. Maybe we need a maximum depth for performance
         #   too. Could do optimal split by DP, or maybe there is a greedy approach. Have to assume there are always large
         #   areas with only one value.
+
+
+        if max_depth != 0:
+            cut_x = self.width // 2
+            cut_y = self.height // 2
+            self.NW = QuadTree(data[0:cut_y, 0:cut_x], max_depth - 1)
+            self.NE = QuadTree(data[0:cut_y, cut_x + 1: self.width], max_depth - 1)
+            self.SW = QuadTree(data[cut_y + 1:self.height, 0:cut_x], max_depth - 1)
+            self.SE = QuadTree(data[cut_y + 1:self.height, cut_x + 1:self.width], max_depth - 1)
+        else:
+            self.data = data
+
+        #TODO : is image big enough to do the split max_depth-times
+
+    def bottom_up(self, data):
+        """
+        TODO : go to the leaves of the tree
+        :param data:
+        :param max_depth:
+        :return:
+        """
+        if self.NW != None:
+            if self.NW.bottom_up(self.NW.data)
+        else:
+            mean = np.mean(data)
+            if mean == 0:
+                return 0
+            elif mean == 1:
+                return 1
+            else:
+                return None
 
         pass
 
@@ -67,3 +107,9 @@ class QuadTree():
 
 
         pass
+
+
+#data = np.eye(100)
+#
+#qtree = QuadTree(data,2)
+#print(np.array(qtree.NW.NW.data).shape)
