@@ -4,7 +4,7 @@ import numpy as np
 import h5py
 
 
-path_load = 'C:/Users/phili/PycharmProjects/untitled2/data/hdf5_image/B01_0361_annotations_si_spacing64.hdf5'
+path_load = '../../inputs/points/B01_1201_annotations_spacing64.npz'
 image = improc.load(path_load, True)
 
 test_file = np.load("", allow_pickle=True)["arr_0"]
