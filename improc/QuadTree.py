@@ -7,6 +7,9 @@ class QuadTree():
     Attributes
     ----------
     self.starting_pixel : Point-Object containing the coordinates of lower-left pixel that is in the area of this part
+
+    self.x_start : x-coordinate of starting pixel
+    self.y_start : y-coordinate of starting pixel
     self.width : (horizontal) width of the area spanned by this Quadtree
     self.height : (vertical) height of the area spanned by this Quadtree
     self.data : contains data as image if necessary (only at bottom level)
@@ -16,14 +19,16 @@ class QuadTree():
     self.SW : QuadTree Object containing information about lower-left child
     self.SE : QuadTree Object containing information about lower-right child
 
-    self.value : If this represents homogeneous field, contains value
+    self.value : If this represents homogeneous field, contains value of this field
 
     Parameters
     ----------
     data : An object containing the (part of the) image we want to make a QuadTree of
     """
 
-    starting_pixel = None
+    #starting_pixel = None
+    x_start = 0
+    y_start = 0
     width = 0
     height = 0
     data = None
@@ -35,36 +40,34 @@ class QuadTree():
     SE = None
 
 
-    def __init__(self, data, max_depth):
+    def __init__(self, data, max_depth, x_start = 0, y_start = 0, previously = False):
         self.data = data    #maybe omit, if this copies all the data (too time-consuming)
-        self.starting_pixel = data[0, 0]
+        #self.starting_pixel = data[0, 0] don´t need this any more
         self.width, self.height = data.shape    #assuming data has an attribute shape
-        self.split(data, max_depth)
+        self.x_start = x_start
+        self.y_start = y_start
+        self.split(data, max_depth, previously)
 
 
-    def split(self, data, max_depth):
+    def split(self, data, max_depth, previously):
         """
 
         :param data: assume this is a numpy array
         :param max_depth: if this is 0, don´t split further
         :return: nothing, writes in attributes for children
         """
-
-        #TODO :
-        #   This method has to do the split of the data. Determine where to split each quadrants in order to get a
-        #   good compression of the data, and then overwrite NW, NE, SW, SE. If one of those areas consists of only one
-        #   pixel value, set the corresponding value-attribute to this value. Maybe we need a maximum depth for performance
-        #   too. Could do optimal split by DP, or maybe there is a greedy approach. Have to assume there are always large
-        #   areas with only one value.
-
-
+        small_enough = (self.width < 5000 & self.height < 5000)
         if max_depth != 0:
             cut_x = self.width // 2
             cut_y = self.height // 2
-            self.NW = QuadTree(data[0:cut_y, 0:cut_x], max_depth - 1)
-            self.NE = QuadTree(data[0:cut_y, cut_x + 1: self.width], max_depth - 1)
-            self.SW = QuadTree(data[cut_y + 1:self.height, 0:cut_x], max_depth - 1)
-            self.SE = QuadTree(data[cut_y + 1:self.height, cut_x + 1:self.width], max_depth - 1)
+            self.NW = QuadTree(data[0:cut_y, 0:cut_x], max_depth - 1, x_start=self.x_start, y_start=self.y_start, previously = small_enough)
+            self.NE = QuadTree(data[0:cut_y, cut_x + 1: self.width], max_depth - 1, x_start=cut_x + 1 + self.x_start, y_start=self.y_start, previously = small_enough)
+            self.SW = QuadTree(data[cut_y + 1:self.height, 0:cut_x], max_depth - 1, x_start=self.x_start, y_start=cut_y + 1 + self.y_start, previously = small_enough)
+            self.SE = QuadTree(data[cut_y + 1:self.height, cut_x + 1:self.width], max_depth - 1, x_start=cut_x + 1 + self.x_start, y_start=cut_y + 1 + self.y_start, previously = small_enough)
+            if small_enough & (not previously):
+                self.bottom_up(data)
+            elif not small_enough:
+                self.bottom_up(data)
         else:
             self.data = data
 
@@ -82,8 +85,8 @@ class QuadTree():
             #mean == 0 => all values are 0
             #mean == 1 => all values are equal to 1. More Polygons: mean 2, 3, 4, ...
             if mean.is_integer():
-                self.value = mean
-                return mean
+                self.value = int(mean)
+                return int(mean)
             else:
                 return None
 
@@ -96,7 +99,11 @@ class QuadTree():
             #then, we can merge
             if len({NW_val, NE_val, SW_val, SE_val}) == 1 and NW_val is not None:
                 self.value = NW_val
-                #maybe set children to None?
+                self.NW = None
+                self.NE = None
+                self.SW = None
+                self.SE = None
+            return self.value
 
 
     def check(self, points):
@@ -109,25 +116,35 @@ class QuadTree():
         val = self.value
         if val is not None:
             #TODO : maybe we only have to return one value (val == 1) for all points then
+            dict = {}
+            is_in_there = val == 1
+            dic = dict(zip(iter(points)))
+
             return [val == 1 for i in range(len(points))]
         else:
             #TODO : implement coordinates, maybe create Point class
+            if self.data is not None:
+                #TODO logic
+                return [None]
+            NW_array = []
+            NE_array = []
+            SW_array = []
+            SE_array = []
             if self.NW is not None:
-                return self.NW.check(points[])
-            elif self.NE is not None:
-                return self.NE.check(points[])
-            elif self.SW is not None:
-                return self.SW.check(points[])
-            elif self.SE is not None:
-                return self.SE.check(points[])
-            else:
-                #TODO : here we have to check each Point individually
+                NW_array =  self.NW.check(points[points[:, 0] <= self.x_start + self.width // 2 & points[:, 1] <= self.y_start + self.height // 2])
+            if self.NE is not None:
+                NE_array = self.NE.check(points[points[:, 0] > self.x_start + self.width // 2 & points[:, 1] <= self.y_start + self.height // 2])
+            if self.SW is not None:
+                SW_array = self.SW.check(points[points[:, 0] <= self.x_start + self.width // 2 & points[:, 1] > self.y_start + self.height // 2])
+            if self.SE is not None:
+                SE_array = self.SE.check(points[points[:, 0] > self.x_start + self.width // 2 & points[:, 1] > self.y_start + self.height // 2])
+            return
 
 
-        pass
 
+data = np.ones((100,100))
 
-#data = np.eye(100)
-#
-#qtree = QuadTree(data,2)
-#print(np.array(qtree.NW.NW.data).shape)
+qtree = QuadTree(data,2)
+print(qtree.value)
+#qtree.bottom_up(data)
+#print(qtree.check(np.array([[1, 2], [99,99]])))
