@@ -36,18 +36,23 @@ def writeHDF5(path: str, save_files=True):
     x = round(dset.shape[0] / 10)
     y = round(dset.shape[1] / 10)
 
-    chunk1 = dset[:x, :y]
-    chunk2 = dset[x + 1:(2 * x), y + 1:(2 * y)]
-    chunk3 = dset[(2 * x) + 1:(3 * x), (2 * y) + 1:(3 * y)]
-    chunk4 = dset[(3 * x) + 1:(4 * x), (3 * y) + 1:(4 * y)]
-    chunk5 = dset[(4 * x) + 1:(5 * x), (4 * y) + 1:(5 * y)]
-    chunk6 = dset[(5 * x) + 1:(6 * x), (5 * y) + 1:(6 * y)]
-    chunk7 = dset[(6 * x) + 1:(7 * x), (6 * y) + 1:(7 * y)]
-    chunk8 = dset[(7 * x) + 1:(8 * x), (7 * y) + 1:(8 * y)]
-    chunk9 = dset[(8 * x) + 1:(9 * x), (8 * y) + 1:(9 * y)]
-    chunk10 = dset[(9 * x) + 1:, (9 * y) + 1:]
+    chunk_vl, chunk_vr = np.array_split(dset, 2, axis=1)
+    chunk_ul, chunk_bl = np.array_split(chunk_vl, 2, axis=0)
+    chunk_ur, chunk_br = np.array_split(chunk_vr, 2, axis=0)
+    chunks = [chunk_ul, chunk_ur, chunk_bl, chunk_br]
 
-    chunks = [chunk1, chunk2, chunk3, chunk4, chunk5, chunk6, chunk7, chunk8, chunk9, chunk10]
+    """
+    => uncomment this 3 splits are needed.
+    
+    chunk_vl, chunk_vm, chunk_vr = np.array_split(dset,3, axis=1)
+    chunk_ul,chunk_ml, chunk_bl = np.array_split(chunk_vl, 3, axis=0)
+    chunk_mu,chunk_mm, chunk_mb = np.array_split(chunk_vr, 3, axis=0)
+    chunk_ur,chunk_mr, chunk_br = np.array_split(chunk_vr, 3, axis=0)
+
+    chunks= [chunk_ul,chunk_mu, chunk_ur, 
+             chunk_ml,chunk_mm, chunk_mr,
+             chunk_bl,chunk_mb, chunk_br]
+    """
 
     if save_files == True:
         for index,chunk in enumerate(chunks):
