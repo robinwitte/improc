@@ -30,12 +30,10 @@ class Mask():
         tuples = list(zip(polygons.polygons, values))
 
         # get maximum x and maximum y values
-        max_x = int(math.ceil(max([polygon.bounds[2] for polygon in polygons.polygons])))
-        max_y = int(math.ceil(max([polygon.bounds[3] for polygon in polygons.polygons])))
-        #max_x = max_x //4
-        #max_y = max_y //4
-        #max_x = 10000
-        #max_y = 10000
+        #max_x = int(math.ceil(max([polygon.bounds[2] for polygon in polygons.polygons])))
+        #max_y = int(math.ceil(max([polygon.bounds[3] for polygon in polygons.polygons])))
+        max_x = 10000
+        max_y = 10000
 
         for i_y in range(max_y // self.chunksize +1):
             for i_x in range(max_x // self.chunksize +1):
