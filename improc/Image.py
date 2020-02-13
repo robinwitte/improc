@@ -31,6 +31,7 @@ class Image():
                 self.mask.create_data_from_polygons(self.polygons)
 
     def check(self, checks):
-        cs = self.mask.chunksize
+        #cs = self.mask.chunksize
         # y chunk is missing (after (x//cs): + ((self.width+cs)*(y//cs))
-        return [self.mask.data[(x//cs)].check(x-(x//cs)*cs, y-(y//cs)*cs, value) for (x,y,value) in checks]
+        #return [self.mask.data[(x//cs)].check(x-(x//cs)*cs, y-(y//cs)*cs, value) for (x,y,value) in checks]
+        return self.mask.data.check(checks)

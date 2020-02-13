@@ -1,7 +1,8 @@
 from rasterio import features
 from rasterio import transform
-from improc.QuadTreeBad import QuadTree
+from improc.QuadTree import QuadTree
 import math
+import h5py
 
 class Mask():
     """ A datastructure to store the mask information from the hdf5 file efficiently"""
@@ -9,7 +10,7 @@ class Mask():
     def __init__(self):
         self.names = []
         self.data = []
-        self.max_depth_of_tree = 5
+        self.max_depth_of_tree = 10
         self.chunksize = 4000
 
         # TODO: which informations are also in the hdf5 file and shoud be stored in the mask object
@@ -18,7 +19,9 @@ class Mask():
     def create_data_from_path(self, path):
         """ Function to create the quadtree while reading the file """
 
-        # TODO: read in data in chunks, create the quadtree and store it in self.data and self.names
+        with h5py.File(path, 'r') as f:
+            dset = f['data']
+            self.data = QuadTree(dset, self.max_depth_of_tree)
 
     def create_data_from_polygons(self, polygons):
         """ Function to create the quadtree from the polygons data """
