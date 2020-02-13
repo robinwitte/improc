@@ -1,4 +1,5 @@
 import numpy as np
+import h5py
 
 class QuadTree():
     """
@@ -108,43 +109,29 @@ class QuadTree():
 
     def check(self, points):
 
-        #TODO :
-        #   This method should check whether a set of points is contained in a certain polygon named name.
-        #   Maybe we only need the pixel-value corresponding to the polygon. Then, we do this recursively, and always pass
-        #   the set of points corresponding to one of the quadrants (e.g. half the points have coordinates in upper-left,
-        #   then pass the set containing these points to check method of upper-left tree, not individually).
         val = self.value
         if val is not None:
-            #TODO : maybe we only have to return one value (val == 1) for all points then
-            dict = {}
-            is_in_there = val == 1
-            dic = dict(zip(iter(points)))
-
-            return [val == 1 for i in range(len(points))]
+            ret = val == 1
+            n = points.shape[0]
+            return np.full(n, ret)
         else:
-            #TODO : implement coordinates, maybe create Point class
             if self.data is not None:
-                #TODO logic
-                return [None]
+                return [self.data[p[1],p[0]] == 1 for p in points]
+            arr = np.full(points.shape[0], False)
             NW_array = []
             NE_array = []
             SW_array = []
             SE_array = []
             if self.NW is not None:
-                NW_array =  self.NW.check(points[points[:, 0] <= self.x_start + self.width // 2 & points[:, 1] <= self.y_start + self.height // 2])
+                NW_array = self.NW.check(points[(points[:, 0] <= self.x_start + self.width // 2) & (points[:, 1] <= self.y_start + self.height // 2)])
             if self.NE is not None:
-                NE_array = self.NE.check(points[points[:, 0] > self.x_start + self.width // 2 & points[:, 1] <= self.y_start + self.height // 2])
+                NE_array = self.NE.check(points[(points[:, 0] > self.x_start + self.width // 2) & (points[:, 1] <= self.y_start + self.height // 2)])
             if self.SW is not None:
-                SW_array = self.SW.check(points[points[:, 0] <= self.x_start + self.width // 2 & points[:, 1] > self.y_start + self.height // 2])
+                SW_array = self.SW.check(points[(points[:, 0] <= self.x_start + self.width // 2) & (points[:, 1] > self.y_start + self.height // 2)])
             if self.SE is not None:
-                SE_array = self.SE.check(points[points[:, 0] > self.x_start + self.width // 2 & points[:, 1] > self.y_start + self.height // 2])
-            return
-
-
-
-data = np.ones((100,100))
-
-qtree = QuadTree(data,2)
-print(qtree.value)
-#qtree.bottom_up(data)
-#print(qtree.check(np.array([[1, 2], [99,99]])))
+                SE_array = self.SE.check(points[(points[:, 0] > self.x_start + self.width // 2) & (points[:, 1] > self.y_start + self.height // 2)])
+            arr[(points[:, 0] <= self.x_start + self.width // 2) & (points[:, 1] <= self.y_start + self.height // 2)] = NW_array
+            arr[(points[:, 0] > self.x_start + self.width // 2) & (points[:, 1] <= self.y_start + self.height // 2)] = NE_array
+            arr[(points[:, 0] <= self.x_start + self.width // 2) & (points[:, 1] > self.y_start + self.height // 2)] = SW_array
+            arr[(points[:, 0] > self.x_start + self.width // 2) & (points[:, 1] > self.y_start + self.height // 2)] = SE_array
+            return arr
