@@ -19,6 +19,7 @@ class Image():
     def __init__(self, path, lazy_init, hdf5):
         self.mask = Mask()
         self.polygons = Polygons()
+        #width
 
         if hdf5:
             self.mask.create_data_from_path(path)
@@ -28,3 +29,8 @@ class Image():
             self.polygons.create_data_from_path(path)
             if not lazy_init:
                 self.mask.create_data_from_polygons(self.polygons)
+
+    def check(self, checks):
+        cs = self.mask.chunksize
+        # y chunk is missing (after (x//cs): + ((self.width+cs)*(y//cs))
+        return [self.mask.data[(x//cs)].check(x-(x//cs)*cs, y-(y//cs)*cs, value) for (x,y,value) in checks]
