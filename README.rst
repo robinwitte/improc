@@ -35,3 +35,16 @@ Here's an example of some basic features that Improc provides.
     # Save mask data
     test_path = 'testfile.hdf5'
     improc.writeHDF5(test_path, image)
+
+
+Status at the end of the project
+=======
+
+Reading json and hdf5 does work.
+
+Checking of points does work, even if the implementation should be optimized.
+
+The translation from polygon, to mask data worked at a point,
+but we changed the QuadTree implementation on the last day and didn't have time to change the translation method.
+
+Writing the hdf5 file and translate the mask data in polygon data was not implemented yet.

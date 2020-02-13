@@ -1,5 +1,5 @@
 import improc
-from improc.QuadTree import QuadTree
+
 import numpy as np
 import h5py
 
